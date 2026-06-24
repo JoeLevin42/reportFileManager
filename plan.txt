@@ -1,0 +1,169 @@
+Funcstion description:
+
+
+LoadFile:
+--reads all the line from the txt
+--handle errors
+I = string path of file
+O = array of str (the line) or null
+Checks:
+-if the file exists / if not error message and return null
+-if the file is empty / display error message and return null
+- if valid - read all line and return array of the lines
+
+ProcessReports:
+-- go on all the lines validate each and store valid records
+--(The way to restore probably will be diffrent array for every field 
+becuase they have different types) 
+--(Because the arrays to be assigned only once so its will be all the valid 
+lines in once!)
+
+-I = array of the lines(str) , arrays for store the valid records;
+-O = the number of the valid records that stored
+
+--Func behavior
+- for every line split it to filed (problay every field will be different array)
+- validate the number of the fields
+- analyze and validate every filed
+- count valid records and invalid records
+- return the count of the valid records
+
+CalculateAverage:
+-- To calculate the average of the grades (field(array))
+-I = array of the grades(double tyoe) , the valid elements
+-O = the average (double)
+
+--Func behavior:
+- sum all the grades
+- divide with the total counter of the lines 
+- return the result
+
+FindMaxScore:
+-- to find the highest grade in the records(return only one)
+
+-I = array of the grades (double type)
+-O = the max grades (double type)
+
+--Func behavior:
+- go in loop on the grades
+- track on the highest values we saw until here
+- return this value
+
+FindMinScore:
+-- To find the minimal valies in the records group
+
+-I = array of grades (double type)
+-O = the mininal value grade (double type)
+
+--Func behavior:
+- go in loop on the grades
+- track the lowest value that saw until here
+- return this vlaue
+
+CountByStatus:
+-- To count how much records there is with specific status (as param)
+-I = array of the statuses (ReportStatus) , the target status for count
+-O = the count of appears of the statuses (int type)
+
+--Func behavior:
+- go in loop on the status array
+- count how many times the status appears (int type)
+- reutrn this vlaue (int type)
+
+CountByType:
+-- To count how many records with the specific type
+-I = array of the reports with the types , the target type to count;
+-O = count of how many types its appears (int type)
+
+--Func behavior:
+-go in loop on the array
+-count how many times the target type appears
+- return this vlaue (int)
+
+DisplayBasicStatistics:
+-- To claculate and display basic statistics:
+-I = arrays of the grades (double[]) , number of the valid reords (int type)
+-Prints - (return void) siplay all
+
+--Func behavior:
+- call to CalculateAverage() - for avg
+- call to FindMaxScore() - find max
+- call to FindMinScore() - find min
+- print all the titles
+- print the total(reports)
+-print the avg grade (2f)
+-prints the max grade
+-prints the min grade
+
+DisplayStatusCount:
+-- To count and display by status:
+-I = array of statses ([]ReportsStatus) , valid records number (int)
+-O = (void) , Prints
+
+--Func behavior:
+- call to CountByStatus() for Pending
+- call to CountByStatus() for approved
+- call to CountByStatus() for rejected
+- prints the titles
+- prints the count for every status
+
+DisplayTypeCounts:
+-- To count and display by reports type
+- I = array of ([]ReportsType) , number of valid (int)
+- O = (void) , prints 
+
+--Func behavior:
+- call to CountByType() - for Collect
+- call to CountByType() - for Analyze
+- call to CountByType() - for Recon
+- call to CoountByType() - for Intel
+- prints the titles
+- pritns count for everty type of report
+
+DisplayHighestPriorityApproved:
+-- To find and display the verified report wiht the highest priority
+-I = array of units name ([]string) , array([]ReportsType) 
+-I = priority array([]int) , grades array ([]int) , statuses array ([]RrportStatus),
+-I = number of valid recoreds(int type)
+-O = (void) , prints
+
+--Func behavior:
+- go in loop on all the records 
+- filter only status = Approved
+- finds this with the highest priority
+- pirnts this wiht all the details (unti,type,priority,grade)
+
+DisplayAverageByPriority:
+-- To find and calculate avg grade for every priority level (1-5)
+-I = priority array ([]int) , grades array ([]double)
+-I = number of the valid records (int type)
+-O = (void) , prints
+
+--Func behavior:
+- every priority (summary not priority as param)
+- for every (different) priority level from 1-5
+- go in loop on all the records 
+- finds the reports with this priority
+- calculate the average of their grades
+- prints the result
+- if not reports in this priory prints "No reports"
+
+Validation Rules:
+Valid records by this coditons only! toghether (&&):
+1. The line contains exacly 5 fields separated by ","
+2. The `Priority` (can be converted to int type) and (between 1-5 include)
+3. The `Score` (can be converted to double) and (between 0.0 - 100.0)
+4. The `ReportsType` (match to one from the four enum values No case sensative!)
+5. The `Status` (match to one from the three enum vlaues No case sensative!)
+6. The `UnitName` not empty after remove the withspaces
+!!if one of this codiotns fails the recored has to be skipped!!
+
+
+
+
+
+
+
+
+
+
