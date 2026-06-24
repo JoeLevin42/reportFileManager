@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using System.linq;
+using System.Linq;
 
 namespace Repots{
-    enum ReportType {Collect,Analyze,Recon,Intell}
+    enum ReportType {Collect,Analyze,Recon,Intel}
     enum ReportStatus {Pending,Approved,Rejected}
 
     class RepotsManager
@@ -114,10 +114,10 @@ namespace Repots{
         static void AddToArray(int index, string[] line, string[] unit, ReportType[] type, int[] priority, double[] score, ReportStatus[] status)
         {
             unit[index] = line[0];
-            type[index] = Enum.Parse<ReportType>(line[1]);
+            type[index] = Enum.Parse<ReportType>(line[1],true);
             priority[index] = int.Parse(line[2]);
             score[index] = double.Parse(line[3]);
-            status[index] = Enum.Parse< ReportStatus>(line[4]);
+            status[index] = Enum.Parse< ReportStatus>(line[4],true);
             
             
         }
@@ -135,28 +135,31 @@ namespace Repots{
                     
                 }
             }
+            Console.WriteLine("Processing complete.");
+            Console.WriteLine($"        Valid records: {index}");
+            Console.WriteLine($"        Invalid records: {splitedArr.Length - index}");
              return index;
                 
            
         }
             
-        static double CalculateAverage(int[] score, int LinesNumber)
+        static double CalculateAverage(double[] score, int LinesNumber)
         {
-            int total_sum = 0;
-            foreach (int num in score)
+            double total_sum = 0;
+            foreach (double num in score)
             {
                 total_sum += num;
             }
-            double avg = (double)total_sum / LinesNumber;
+            double avg = total_sum / (double)LinesNumber;
             return avg;
         }
 
         static double FindMinScore(double[] score)
         {
             double min_find = score[0];
-            foreach (int num in score)
+            foreach (double num in score)
             {
-                if num < min_find {min_find = num}
+                if (num < min_find) { min_find = num; }
 
             }
             return min_find;
@@ -167,27 +170,162 @@ namespace Repots{
             double max_find = score[0];
             foreach (int num in score)
             {
-                if num > max_find {max_find = num}
+                if (num > max_find) { max_find = num; }
             }
             return max_find;
         }   
 
-        static int CountByStatus(ReportStatus[] statuses, int LinesNumber, ReportStatus targetStatus)
-        {   
-            int statusCounter = 0
-            foreach (ReportStatus stat in statuses)
+        static int CountByStatus(ReportStatus[] statuses, ReportStatus targetStatus,int linesNumber)
+        {
+            int statusCounter = 0;
+            for (int i = 0; i < linesNumber; i++)
             {
-                if (stat == targetStatus)
+                if (statuses[i] == targetStatus)
+                {
                     statusCounter++;
+                }
             }
             return statusCounter;
+
         }
 
-        static int CountByType(ReportType[] )
+        static int CountByType(ReportType[] typeArr , ReportType targetType, int linesNumber) // need be for example (ReportType.something)
+        {
+            int typeCounter = 0;
+            for (int i=0;i< linesNumber; i++)
+            {
+                if (typeArr[i] == targetType)
+                {
+                    typeCounter++;
+                }
+            }
+            return typeCounter;
+        }
+
+        
+
+        static void DisplayBasicStatistics(double[] score , int linesNumber)
+        {
+            double avg = CalculateAverage(score, linesNumber);
+            double max = FindMaxScore(score);
+            double min = FindMinScore(score);
+
+
+            Console.WriteLine($@"
+                ===Report Statistics ===
+                Total Reports: {linesNumber}
+                Average Score: {avg}
+                Highest Score: {max}
+                Lowest Score: {min}");
+        }
+
+
+        static void DisplayTypeCounts(ReportType[] type , int LinesNumber)
+        { 
+            int collectCounter = CountByType(type,ReportType.Collect, LinesNumber);
+            int analyzeCounter = CountByType(type,ReportType.Analyze, LinesNumber);
+            int reconCounter = CountByType(type,ReportType.Recon, LinesNumber);
+            int intelCounter = CountByType(type,ReportType.Intel, LinesNumber);
+
+
+            System.Console.WriteLine($@"
+            ===Reports by Type===
+                Collect: {collectCounter}
+                Analyze: {analyzeCounter}
+                Recon: {reconCounter}
+                Intel: {intelCounter}
+            ");
+        }
+
+        static void DisplayStatusCounts(ReportStatus[] statuses, int linesNumber)
+        {
+            int pendingCounter = CountByStatus(statuses, ReportStatus.Pending, linesNumber);
+            int approvedCounter = CountByStatus(statuses, ReportStatus.Approved, linesNumber);
+            int rejectedCounter = CountByStatus(statuses, ReportStatus.Rejected, linesNumber);
+
+            System.Console.WriteLine($@"
+            ===Reports by Status===
+                Approved: {approvedCounter}
+                Pending: {pendingCounter}
+                Rejected: {rejectedCounter}
+            ");
+        }
+
+        static void DisplayHighestPriorityApproved(string[] unit, ReportType[] type, int[] priority, double[] score, ReportStatus[] statuses, int numberLines)
+        {   //return only the first!!!!
+            int highestIndex= -1;
+            int maxPriority=0;
+            for (int i = 0; i < numberLines; i++)
+            {
+                if (statuses[i] == ReportStatus.Approved)
+                {
+                    if (priority[i] > maxPriority)
+                    {
+                        maxPriority = priority[i];
+                        highestIndex = i;
+                    }
+                }
+            }
+            if (highestIndex >= 0) {
+
+
+                Console.WriteLine($@"
+           ===Highest Priority Approved Report===
+                    Unit: {unit[highestIndex]}
+                    Type: {type[highestIndex]}
+                    Priority: {priority[highestIndex]}
+                    Score: {score[highestIndex]}
+                ");
+            }
+            else {Console.WriteLine("Not found nothing"); }
+        }
+
+
+        static void DisplayAverageByPriority(int[] priority, double[] score , int linesNumber)
+        {
+            
+            int incrementPriority = 1;
+            double[] avgArr = new double[5];
+            
+            for (int pLevel = 0; pLevel< 5; pLevel++)
+            {
+                double totalSum = 0;
+                int count = 0;
+                for (int i = 0; i < linesNumber; i++)
+                {
+                    if (priority[i] == pLevel+1)
+                    {
+                        totalSum += score[i];
+                        count++;
+                    }
+                }
+                if (count > 0)
+                {
+                    double avg = totalSum / (double)count;
+                    avgArr[pLevel] = avg;
+                }
+               }
+            Console.WriteLine($@"
+           ===Average Score by Priority===
+                Priority 1: {(avgArr[0] > 0 ? avgArr[0].ToString("F2") : "reports")}
+                Priority 2: {(avgArr[1] > 0 ? avgArr[1].ToString("F2") : "No reports")}
+                Priority 3: {(avgArr[2] > 0 ? avgArr[2].ToString("F2") : "No reports")}
+                Priority 4: {(avgArr[3] > 0 ? avgArr[3].ToString("F2") : "No reports")}
+                Priority 5: {(avgArr[4] > 0 ? avgArr[4].ToString("F2") : "No reports")}
+
+            ");
+
+
+            }
+            
+        
+
+
+
 
         static void Main()
-        {   
-            const string path = "reports.txt"
+        {
+            const string path = "reports.txt";
             string[] unit = new string[100];
             ReportType[] type = new ReportType[100];
             int[] priority = new int[100];
@@ -198,9 +336,15 @@ namespace Repots{
             string[][] splitedArr = SplitArr(loadedFile);
             int validLinesNumber = ProcessReports(splitedArr, unit, type, priority, score,statuses);
 
+            DisplayBasicStatistics(score, validLinesNumber);
+            DisplayStatusCounts(statuses, validLinesNumber);
+            DisplayTypeCounts(type, validLinesNumber);
+            DisplayHighestPriorityApproved(unit, type, priority, score, statuses, validLinesNumber);
+            DisplayAverageByPriority(priority, score, validLinesNumber);
 
-
-            
         }
     }
 }
+
+// need to refactore the calculate avg by  piroity
+// need to diaplay numers of validline / invalid lines 
