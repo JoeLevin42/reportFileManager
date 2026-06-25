@@ -22,7 +22,7 @@ namespace Repots{
                 Console.WriteLine("Error: File is empty");
                 return null;
             }
-            Console.WriteLine($"File loaded: {lines.Length} lines found");
+            Console.WriteLine($"     File loaded: {lines.Length} lines found");
             return lines;
         }
         
@@ -135,7 +135,7 @@ namespace Repots{
                     
                 }
             }
-            Console.WriteLine("Processing complete.");
+            Console.WriteLine("        Processing complete.");
             Console.WriteLine($"        Valid records: {index}");
             Console.WriteLine($"        Invalid records: {splitedArr.Length - index}");
              return index;
@@ -204,23 +204,25 @@ namespace Repots{
 
         
 
-        static void DisplayBasicStatistics(double[] score , int linesNumber)
+        static string DisplayBasicStatistics(double[] score , int linesNumber)
         {
             double avg = CalculateAverage(score, linesNumber);
             double max = FindMaxScore(score);
             double min = FindMinScore(score);
 
 
-            Console.WriteLine($@"
+            string printPromt = ($@"
                 ===Report Statistics ===
                 Total Reports: {linesNumber}
-                Average Score: {avg}
+                Average Score: {avg:0.##}
                 Highest Score: {max}
                 Lowest Score: {min}");
+            Console.WriteLine(printPromt);
+            return printPromt;
         }
 
 
-        static void DisplayTypeCounts(ReportType[] type , int LinesNumber)
+        static string DisplayTypeCounts(ReportType[] type , int LinesNumber)
         { 
             int collectCounter = CountByType(type,ReportType.Collect, LinesNumber);
             int analyzeCounter = CountByType(type,ReportType.Analyze, LinesNumber);
@@ -228,30 +230,34 @@ namespace Repots{
             int intelCounter = CountByType(type,ReportType.Intel, LinesNumber);
 
 
-            System.Console.WriteLine($@"
+            string printPromt = ($@"
             ===Reports by Type===
                 Collect: {collectCounter}
                 Analyze: {analyzeCounter}
                 Recon: {reconCounter}
                 Intel: {intelCounter}
             ");
+            Console.WriteLine(printPromt);
+            return printPromt;
         }
 
-        static void DisplayStatusCounts(ReportStatus[] statuses, int linesNumber)
+        static string DisplayStatusCounts(ReportStatus[] statuses, int linesNumber)
         {
             int pendingCounter = CountByStatus(statuses, ReportStatus.Pending, linesNumber);
             int approvedCounter = CountByStatus(statuses, ReportStatus.Approved, linesNumber);
             int rejectedCounter = CountByStatus(statuses, ReportStatus.Rejected, linesNumber);
 
-            System.Console.WriteLine($@"
+            string printPromt = ($@"
             ===Reports by Status===
                 Approved: {approvedCounter}
                 Pending: {pendingCounter}
                 Rejected: {rejectedCounter}
             ");
+            Console.WriteLine(printPromt);
+            return printPromt;
         }
 
-        static void DisplayHighestPriorityApproved(string[] unit, ReportType[] type, int[] priority, double[] score, ReportStatus[] statuses, int numberLines)
+        static string DisplayHighestPriorityApproved(string[] unit, ReportType[] type, int[] priority, double[] score, ReportStatus[] statuses, int numberLines)
         {   //return only the first!!!!
             int highestIndex= -1;
             int maxPriority=0;
@@ -266,10 +272,11 @@ namespace Repots{
                     }
                 }
             }
+            string printPromt = "Not Found";
             if (highestIndex >= 0) {
 
 
-                Console.WriteLine($@"
+                printPromt = ($@"
            ===Highest Priority Approved Report===
                     Unit: {unit[highestIndex]}
                     Type: {type[highestIndex]}
@@ -277,11 +284,14 @@ namespace Repots{
                     Score: {score[highestIndex]}
                 ");
             }
-            else {Console.WriteLine("Not found nothing"); }
+            
+
+            Console.WriteLine(printPromt);
+            return printPromt;
         }
 
 
-        static void DisplayAverageByPriority(int[] priority, double[] score , int linesNumber)
+        static string DisplayAverageByPriority(int[] priority, double[] score , int linesNumber)
         {
             
             int incrementPriority = 1;
@@ -305,27 +315,35 @@ namespace Repots{
                     avgArr[pLevel] = avg;
                 }
                }
-            Console.WriteLine($@"
+            string printPromt = $@"
            ===Average Score by Priority===
                 Priority 1: {(avgArr[0] > 0 ? avgArr[0].ToString("F2") : "reports")}
                 Priority 2: {(avgArr[1] > 0 ? avgArr[1].ToString("F2") : "No reports")}
                 Priority 3: {(avgArr[2] > 0 ? avgArr[2].ToString("F2") : "No reports")}
                 Priority 4: {(avgArr[3] > 0 ? avgArr[3].ToString("F2") : "No reports")}
                 Priority 5: {(avgArr[4] > 0 ? avgArr[4].ToString("F2") : "No reports")}
+            ";
 
-            ");
+            Console.WriteLine(printPromt);
+            return printPromt;
+        }
+                            
+        static void WriteToOutFile(string path,string basicStaticsPromt , string countStatusPromt, string countTypePromt, string highestPrApPromt, string avgByPrPromt)
+        {
+            string writeAllPromt = $@"
+            {basicStaticsPromt}
+            {countStatusPromt}
+            {countTypePromt}
+            {highestPrApPromt}
+            {avgByPrPromt}
+            ";
 
-
-            }
-            
-        
-
-
-
-
+            File.WriteAllText(path, writeAllPromt);
+        }
         static void Main()
         {
-            const string path = "reports.txt";
+            const string path = "\\bin\\Debug\\net10.0\\reports.txt";
+            const string outpath = "\\bin\\Debug\\net10.0\\output.txt";
             string[] unit = new string[100];
             ReportType[] type = new ReportType[100];
             int[] priority = new int[100];
@@ -336,12 +354,12 @@ namespace Repots{
             string[][] splitedArr = SplitArr(loadedFile);
             int validLinesNumber = ProcessReports(splitedArr, unit, type, priority, score,statuses);
 
-            DisplayBasicStatistics(score, validLinesNumber);
-            DisplayStatusCounts(statuses, validLinesNumber);
-            DisplayTypeCounts(type, validLinesNumber);
-            DisplayHighestPriorityApproved(unit, type, priority, score, statuses, validLinesNumber);
-            DisplayAverageByPriority(priority, score, validLinesNumber);
-
+            string basicStatPromt = DisplayBasicStatistics(score, validLinesNumber);
+            string countStatusPromt = DisplayStatusCounts(statuses, validLinesNumber);
+            string countTypePromt = DisplayTypeCounts(type, validLinesNumber);
+            string highestPrApPromt =DisplayHighestPriorityApproved(unit, type, priority, score, statuses, validLinesNumber);
+            string avgByPrPromt = DisplayAverageByPriority(priority, score, validLinesNumber);
+            WriteToOutFile(outpath, basicStatPromt, countStatusPromt, countTypePromt, highestPrApPromt, avgByPrPromt);
         }
     }
 }

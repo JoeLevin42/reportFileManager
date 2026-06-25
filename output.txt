@@ -1,1 +1,36 @@
-ÿþ
+
+            
+                ===Report Statistics ===
+                Total Reports: 23
+                Average Score: 71.97
+                Highest Score: 100
+                Lowest Score: 0
+            
+            ===Reports by Status===
+                Approved: 15
+                Pending: 4
+                Rejected: 4
+            
+            
+            ===Reports by Type===
+                Collect: 7
+                Analyze: 5
+                Recon: 6
+                Intel: 5
+            
+            
+           ===Highest Priority Approved Report===
+                    Unit: Bravo
+                    Type: Analyze
+                    Priority: 5
+                    Score: 92
+                
+            
+           ===Average Score by Priority===
+                Priority 1: 34.98
+                Priority 2: 62.10
+                Priority 3: 79.53
+                Priority 4: 84.55
+                Priority 5: 93.05
+            
+            
