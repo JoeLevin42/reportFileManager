@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace Repots{
+namespace Reports {
     enum ReportType {Collect,Analyze,Recon,Intel}
     enum ReportStatus {Pending,Approved,Rejected}
 
@@ -211,12 +211,13 @@ namespace Repots{
             double min = FindMinScore(score);
 
 
-            string printPromt = ($@"
+            string printPromt = $@"
                 ===Report Statistics ===
                 Total Reports: {linesNumber}
                 Average Score: {avg:0.##}
                 Highest Score: {max}
-                Lowest Score: {min}");
+                Lowest Score: {min}";
+
             Console.WriteLine(printPromt);
             return printPromt;
         }
@@ -247,12 +248,12 @@ namespace Repots{
             int approvedCounter = CountByStatus(statuses, ReportStatus.Approved, linesNumber);
             int rejectedCounter = CountByStatus(statuses, ReportStatus.Rejected, linesNumber);
 
-            string printPromt = ($@"
+            string printPromt = $@"
             ===Reports by Status===
                 Approved: {approvedCounter}
                 Pending: {pendingCounter}
                 Rejected: {rejectedCounter}
-            ");
+            ";
             Console.WriteLine(printPromt);
             return printPromt;
         }
@@ -342,8 +343,11 @@ namespace Repots{
         }
         static void Main()
         {
-            const string path = "\\bin\\Debug\\net10.0\\reports.txt";
-            const string outpath = "\\bin\\Debug\\net10.0\\output.txt";
+           
+            const string path = "reports.txt";
+            const string outpath = "output.txt";
+           
+
             string[] unit = new string[100];
             ReportType[] type = new ReportType[100];
             int[] priority = new int[100];
@@ -360,6 +364,8 @@ namespace Repots{
             string highestPrApPromt =DisplayHighestPriorityApproved(unit, type, priority, score, statuses, validLinesNumber);
             string avgByPrPromt = DisplayAverageByPriority(priority, score, validLinesNumber);
             WriteToOutFile(outpath, basicStatPromt, countStatusPromt, countTypePromt, highestPrApPromt, avgByPrPromt);
+            Console.WriteLine("\nProgram finished successfully. Press Enter to close");
+            Console.ReadLine();
         }
     }
 }
